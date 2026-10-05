@@ -1,0 +1,56 @@
+[
+  {
+    "id": "sample-a",
+    "chain": "sample",
+    "name": "サンプルカラオケ A店",
+    "address": "デモ用店舗",
+    "samplePlan": {
+      "name": "デモ料金",
+      "pricePerPersonPerHour": 400
+    },
+    "options": {
+      "potato": {
+        "type": "all_you_can_eat",
+        "price": 0,
+        "serves": 1
+      },
+      "alcohol": {
+        "available": true,
+        "price": 1000
+      }
+    },
+    "travel": {
+      "transitMinutes": 25,
+      "carMinutes": 15,
+      "walkMinutes": 40
+    },
+    "updated": "DEMO"
+  },
+  {
+    "id": "sample-b",
+    "chain": "sample",
+    "name": "サンプルカラオケ B店",
+    "address": "デモ用店舗",
+    "samplePlan": {
+      "name": "デモ料金",
+      "pricePerPersonPerHour": 350
+    },
+    "options": {
+      "potato": {
+        "type": "portion",
+        "price": 500,
+        "serves": 2
+      },
+      "alcohol": {
+        "available": true,
+        "price": 900
+      }
+    },
+    "travel": {
+      "transitMinutes": 15,
+      "carMinutes": 10,
+      "walkMinutes": 30
+    },
+    "updated": "DEMO"
+  }
+]
