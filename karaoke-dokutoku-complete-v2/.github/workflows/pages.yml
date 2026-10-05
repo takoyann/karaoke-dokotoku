@@ -33,7 +33,7 @@ jobs:
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './web'
+          path: './karaoke-dokutoku-complete-v2/web'
 
       - name: Deploy
         id: deployment
