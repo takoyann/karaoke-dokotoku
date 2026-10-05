@@ -1,4 +1,0 @@
-[
-  {"id":"big_echo_uji_alcohol","store_id":"big_echo_uji","type":"alcohol","mode":"available","price_yen":null,"per_person":true,"source_url":"https://big-echo.jp/shop_info/%E3%82%AB%E3%83%A9%E3%82%AA%E3%82%B1-%E3%83%93%E3%83%83%E3%82%B0%E3%82%A8%E3%82%B3%E3%83%BC%E5%AE%87%E6%B2%BB%E5%BA%97","checked_at":"2026-10-05","confidence":"verified_availability"},
-  {"id":"kaikatsu_20515_potato","store_id":"kaikatsu_20515","type":"potato","mode":"unavailable","price_yen":null,"per_person":false,"source_url":"https://www.kaikatsu.jp/shop/detail/20515.html","checked_at":"2026-10-05","confidence":"not_listed"}
-]
