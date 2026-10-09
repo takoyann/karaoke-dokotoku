@@ -1,9 +1,0 @@
-[
-  {"id":"manekineko","name":"カラオケまねきねこ","website":"https://www.karaokemanekineko.jp/","store_index":"https://www.karaokemanekineko.jp/locations/","adapter":"generic"},
-  {"id":"big_echo","name":"ビッグエコー","website":"https://big-echo.jp/","store_index":"https://big-echo.jp/shop_search/","adapter":"big_echo"},
-  {"id":"banban","name":"カラオケBanBan","website":"https://karaoke-shin.jp/","store_index":"https://karaoke-shin.jp/shop-list/","adapter":"banban"},
-  {"id":"jankara","name":"ジャンカラ","website":"https://jankara.ne.jp/","store_index":"https://jankara.ne.jp/shop/","adapter":"jankara"},
-  {"id":"karaoke_kan","name":"カラオケ館","website":"https://karaokekan.jp/","store_index":"https://karaokekan.jp/shop","adapter":"generic"},
-  {"id":"cote_d_azur","name":"コート・ダジュール","website":"https://www.cotedazur.jp/","store_index":"https://www.cotedazur.jp/branch/","adapter":"cote_d_azur"},
-  {"id":"kaikatsu_club","name":"快活CLUB","website":"https://www.kaikatsu.jp/","store_index":"https://www.kaikatsu.jp/shop/result.html","adapter":"kaikatsu"}
-]

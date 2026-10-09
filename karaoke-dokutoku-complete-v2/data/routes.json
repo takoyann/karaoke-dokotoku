@@ -1,6 +1,0 @@
-{
-  "routing": {
-    "walk_car": {"provider":"OSRM","base":"https://router.project-osrm.org"},
-    "transit": {"provider":"external_api","endpoint_env":"TRANSIT_API_URL","api_key_env":"TRANSIT_API_KEY"}
-  }
-}
