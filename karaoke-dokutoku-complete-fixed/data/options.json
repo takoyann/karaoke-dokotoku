@@ -1,0 +1,16 @@
+{
+  "transport_modes": [
+    "transit",
+    "car"
+  ],
+  "extras": [
+    "potato",
+    "alcohol"
+  ],
+  "customer_types": [
+    "student_member",
+    "student",
+    "member",
+    "general"
+  ]
+}

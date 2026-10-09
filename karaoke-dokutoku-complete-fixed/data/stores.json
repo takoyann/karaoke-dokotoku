@@ -1,0 +1,51 @@
+[
+  {
+    "id": "sample-manekineko",
+    "chainId": "manekineko",
+    "name": "まねきねこ 京都駅前店",
+    "lat": 34.9858,
+    "lng": 135.7588
+  },
+  {
+    "id": "sample-big-echo",
+    "chainId": "big-echo",
+    "name": "ビッグエコー 京都駅前店",
+    "lat": 34.9855,
+    "lng": 135.7584
+  },
+  {
+    "id": "sample-banban",
+    "chainId": "banban",
+    "name": "BanBan 京都店",
+    "lat": 35.0,
+    "lng": 135.7681
+  },
+  {
+    "id": "sample-jankara",
+    "chainId": "jankara",
+    "name": "ジャンカラ 京都駅前店",
+    "lat": 34.985,
+    "lng": 135.758
+  },
+  {
+    "id": "sample-karaokekan",
+    "chainId": "karaokekan",
+    "name": "カラオケ館 京都駅前店",
+    "lat": 34.9862,
+    "lng": 135.7586
+  },
+  {
+    "id": "sample-cotedazur",
+    "chainId": "cotedazur",
+    "name": "コート・ダジュール 京都駅前店",
+    "lat": 34.9852,
+    "lng": 135.7577
+  },
+  {
+    "id": "sample-kaikatsu",
+    "chainId": "kaikatsu",
+    "name": "快活CLUB 京都駅前店",
+    "lat": 34.9859,
+    "lng": 135.7592
+  }
+]

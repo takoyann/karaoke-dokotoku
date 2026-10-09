@@ -1,0 +1,163 @@
+[
+  {
+    "storeId": "sample-manekineko",
+    "verified": false,
+    "sourceUrl": "",
+    "plans": [
+      {
+        "id": "2h",
+        "name": "2時間",
+        "minutes": 120,
+        "pricePerPerson": 1200,
+        "studentPricePerPerson": 1000
+      }
+    ],
+    "extras": {
+      "potato": {
+        "type": "portion",
+        "price": 500
+      },
+      "alcohol": {
+        "pricePerPerson": 1500
+      }
+    }
+  },
+  {
+    "storeId": "sample-big-echo",
+    "verified": false,
+    "sourceUrl": "",
+    "plans": [
+      {
+        "id": "2h",
+        "name": "2時間",
+        "minutes": 120,
+        "pricePerPerson": 1400,
+        "studentPricePerPerson": 1200
+      }
+    ],
+    "extras": {
+      "potato": {
+        "type": "portion",
+        "price": 500
+      },
+      "alcohol": {
+        "pricePerPerson": 1500
+      }
+    }
+  },
+  {
+    "storeId": "sample-banban",
+    "verified": false,
+    "sourceUrl": "",
+    "plans": [
+      {
+        "id": "2h",
+        "name": "2時間",
+        "minutes": 120,
+        "pricePerPerson": 1100,
+        "studentPricePerPerson": 900
+      }
+    ],
+    "extras": {
+      "potato": {
+        "type": "portion",
+        "price": 500
+      },
+      "alcohol": {
+        "pricePerPerson": 1500
+      }
+    }
+  },
+  {
+    "storeId": "sample-jankara",
+    "verified": false,
+    "sourceUrl": "",
+    "plans": [
+      {
+        "id": "2h",
+        "name": "2時間",
+        "minutes": 120,
+        "pricePerPerson": 1200,
+        "studentPricePerPerson": 950
+      }
+    ],
+    "extras": {
+      "potato": {
+        "type": "portion",
+        "price": 500
+      },
+      "alcohol": {
+        "pricePerPerson": 1500
+      }
+    }
+  },
+  {
+    "storeId": "sample-karaokekan",
+    "verified": false,
+    "sourceUrl": "",
+    "plans": [
+      {
+        "id": "2h",
+        "name": "2時間",
+        "minutes": 120,
+        "pricePerPerson": 1400,
+        "studentPricePerPerson": 1100
+      }
+    ],
+    "extras": {
+      "potato": {
+        "type": "portion",
+        "price": 500
+      },
+      "alcohol": {
+        "pricePerPerson": 1500
+      }
+    }
+  },
+  {
+    "storeId": "sample-cotedazur",
+    "verified": false,
+    "sourceUrl": "",
+    "plans": [
+      {
+        "id": "2h",
+        "name": "2時間",
+        "minutes": 120,
+        "pricePerPerson": 1300,
+        "studentPricePerPerson": 1050
+      }
+    ],
+    "extras": {
+      "potato": {
+        "type": "portion",
+        "price": 500
+      },
+      "alcohol": {
+        "pricePerPerson": 1500
+      }
+    }
+  },
+  {
+    "storeId": "sample-kaikatsu",
+    "verified": false,
+    "sourceUrl": "",
+    "plans": [
+      {
+        "id": "2h",
+        "name": "2時間",
+        "minutes": 120,
+        "pricePerPerson": 700,
+        "studentPricePerPerson": 700
+      }
+    ],
+    "extras": {
+      "potato": {
+        "type": "portion",
+        "price": 500
+      },
+      "alcohol": {
+        "pricePerPerson": 1500
+      }
+    }
+  }
+]
