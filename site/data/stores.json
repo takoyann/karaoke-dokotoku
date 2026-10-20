@@ -1,20 +1,111 @@
 {
   "version": 1,
-  "lastUpdated": null,
+  "lastUpdated": "2026-10-20",
   "stores": [
     {
-      "id": "sample-001",
-      "chain": "まねきねこ",
-      "storeName": "サンプル店舗",
+      "id": "jankara-kyoto-ekimae",
+      "chain": "ジャンカラ",
+      "storeName": "ジャンカラ 京都駅前店",
       "prefecture": "京都府",
-      "city": "宇治市",
-      "address": "",
+      "city": "京都市下京区",
+      "address": "京都府京都市下京区東洞院塩小路下ル東塩小路町849 セレマビル6〜7F",
       "latitude": null,
       "longitude": null,
-      "stations": [],
-      "officialUrl": "",
-      "verifiedAt": null,
-      "pricing": []
+      "stations": [
+        "京都駅"
+      ],
+      "officialUrl": "https://jankara.ne.jp/shop/146/",
+      "verifiedAt": "2026-10-20",
+      "pricing": [
+        {
+          "dayType": "weekday",
+          "timeType": "daytime",
+          "plan": "normal",
+          "unit": "30min",
+          "price": 470,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        },
+        {
+          "dayType": "weekend",
+          "timeType": "daytime",
+          "plan": "normal",
+          "unit": "30min",
+          "price": 600,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        },
+        {
+          "dayType": "weekday",
+          "timeType": "night",
+          "plan": "normal",
+          "unit": "30min",
+          "price": 680,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        },
+        {
+          "dayType": "weekend",
+          "timeType": "night",
+          "plan": "normal",
+          "unit": "30min",
+          "price": 990,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        },
+        {
+          "dayType": "weekday",
+          "timeType": "daytime",
+          "plan": "student",
+          "unit": "30min",
+          "price": 330,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        },
+        {
+          "dayType": "weekend",
+          "timeType": "daytime",
+          "plan": "student",
+          "unit": "30min",
+          "price": 470,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        },
+        {
+          "dayType": "weekday",
+          "timeType": "night",
+          "plan": "student",
+          "unit": "30min",
+          "price": 480,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        },
+        {
+          "dayType": "weekend",
+          "timeType": "night",
+          "plan": "student",
+          "unit": "30min",
+          "price": 650,
+          "billingMinutes": 30,
+          "minimumMinutes": 30,
+          "minimumPeople": 1,
+          "mandatoryFee": 0
+        }
+      ]
     }
   ]
 }
