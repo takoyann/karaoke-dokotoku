@@ -117,7 +117,52 @@
       "stations": ["京都河原町駅"],
       "officialUrl": "https://www.karaokemanekineko.jp/locations/kyoto/kyoto/kawaramachi-store/",
       "verifiedAt": "2026-10-20",
-      "pricing": []
+      "pricing": [
+  {
+    "dayType": "weekday",
+    "timeType": "daytime",
+    "plan": "member",
+    "unit": "30min",
+    "price": 100,
+    "billingMinutes": 30,
+    "minimumMinutes": 60,
+    "minimumPeople": 1,
+    "mandatoryFee": 451
+  },
+  {
+    "dayType": "weekend",
+    "timeType": "daytime",
+    "plan": "member",
+    "unit": "30min",
+    "price": 180,
+    "billingMinutes": 30,
+    "minimumMinutes": 60,
+    "minimumPeople": 1,
+    "mandatoryFee": 451
+  },
+  {
+    "dayType": "weekday",
+    "timeType": "daytime",
+    "plan": "normal",
+    "unit": "30min",
+    "price": 300,
+    "billingMinutes": 30,
+    "minimumMinutes": 60,
+    "minimumPeople": 1,
+    "mandatoryFee": 451
+  },
+  {
+    "dayType": "weekend",
+    "timeType": "daytime",
+    "plan": "normal",
+    "unit": "30min",
+    "price": 380,
+    "billingMinutes": 30,
+    "minimumMinutes": 60,
+    "minimumPeople": 1,
+    "mandatoryFee": 451
+  }
+]
     }
   ]
 }
