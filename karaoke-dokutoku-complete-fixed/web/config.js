@@ -1,1 +1,0 @@
-window.KD_CONFIG={dataBase:"../data/",nominatim:"https://nominatim.openstreetmap.org/search",osrm:"https://router.project-osrm.org/route/v1"};
