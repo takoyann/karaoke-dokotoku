@@ -70,16 +70,29 @@
     </div>
 
     <div class="form-field">
-      <label for="hours">利用時間</label>
-      <select id="hours">
-        <option value="1">1時間</option>
-        <option value="2" selected>2時間</option>
-        <option value="3">3時間</option>
-        <option value="4">4時間</option>
-        <option value="5">5時間</option>
-      </select>
-    </div>
+<div class="form-field duration-field">
+  <label for="duration">利用時間</label>
+
+  <div class="duration-controls">
+    <button type="button" id="duration-minus" aria-label="5分短く">−</button>
+    <output id="duration-display" for="duration">1時間30分</output>
+    <button type="button" id="duration-plus" aria-label="5分長く">＋</button>
   </div>
+
+  <input
+    id="duration"
+    type="range"
+    min="30"
+    max="720"
+    step="5"
+    value="90"
+  >
+
+  <div class="duration-range">
+    <span>30分</span>
+    <span>12時間</span>
+  </div>
+</div>
 
   <div class="select-row">
     <div class="form-field">
