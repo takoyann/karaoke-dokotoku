@@ -1,15 +1,226 @@
-"use strict";
-
 const DATA_URL = "./data/stores.json";
 
-const app = {
-  stores: []
-};
+const $ = (selector) => document.querySelector(selector);
 
-const $ = selector => document.querySelector(selector);
+let stores = [];
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
+const durationInput = $("#duration");
+const durationDisplay = $("#duration-display");
+const minusButton = $("#duration-minus");
+const plusButton = $("#duration-plus");
+
+function formatDuration(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours === 0) return `${remainingMinutes}分`;
+  if (remainingMinutes === 0) return `${hours}時間`;
+
+  return `${hours}時間${remainingMinutes}分`;
+}
+
+function updateDuration() {
+  const min = Number(durationInput.min);
+  const max = Number(durationInput.max);
+  const value = Number(durationInput.value);
+
+  durationInput.value = Math.max(min, Math.min(max, value));
+  durationDisplay.textContent = formatDuration(
+    Number(durationInput.value)
+  );
+
+  minusButton.disabled = Number(durationInput.value) <= min;
+  plusButton.disabled = Number(durationInput.value) >= max;
+
+  renderStores();
+}
+
+function changeDuration(amount) {
+  const min = Number(durationInput.min);
+  const max = Number(durationInput.max);
+  const current = Number(durationInput.value);
+
+  durationInput.value = Math.max(
+    min,
+    Math.min(max, current + amount)
+  );
+
+  updateDuration();
+}
+
+function getConditions() {
+  return {
+    people: Number($("#people")?.value || 2),
+    durationMinutes: Number(durationInput.value),
+    dayType: $("#day-type")?.value || "weekday",
+    timeType: $("#time-type")?.value || "daytime",
+    plan: $("#plan")?.value || "normal",
+    search: ($("#search")?.value || "").trim().toLowerCase(),
+    prefecture: $("#prefecture")?.value || "",
+    city: $("#city")?.value || ""
+  };
+}
+
+function calculatePrice(store, conditions) {
+  if (!Array.isArray(store.pricing)) return null;
+
+  const matchingPrices = store.pricing.filter((item) => {
+    return (
+      item.dayType === conditions.dayType &&
+      item.timeType === conditions.timeType &&
+      item.plan === conditions.plan &&
+      Number(item.minimumPeople || 1) <= conditions.people &&
+      Number(item.price) >= 0
+    );
+  });
+
+  if (matchingPrices.length === 0) return null;
+
+  const estimates = matchingPrices.map((item) => {
+    const price = Number(item.price);
+    const people = conditions.people;
+    const duration = conditions.durationMinutes;
+    const mandatoryFee = Number(item.mandatoryFee || 0);
+
+    let total;
+
+    if (item.unit === "30min" || item.unit === "hour") {
+      const defaultBillingMinutes =
+        item.unit === "30min" ? 30 : 60;
+
+      const billingMinutes = Number(
+        item.billingMinutes || defaultBillingMinutes
+      );
+
+      const minimumMinutes = Number(
+        item.minimumMinutes || billingMinutes
+      );
+
+      const billableMinutes = Math.max(
+        duration,
+        minimumMinutes
+      );
+
+      const blocks = Math.ceil(
+        billableMinutes / billingMinutes
+      );
+
+      total = price * blocks * people;
+    } else if (item.unit === "flat") {
+      total = price * people;
+    } else {
+      return null;
+    }
+
+    total += mandatoryFee * people;
+
+    if (Number.isFinite(Number(item.minimumCharge))) {
+      total = Math.max(total, Number(item.minimumCharge));
+    }
+
+    return {
+      total,
+      unit: item.unit
+    };
+  }).filter(Boolean);
+
+  if (estimates.length === 0) return null;
+
+  return estimates.reduce((cheapest, current) =>
+    current.total < cheapest.total ? current : cheapest
+  );
+}
+
+function renderStores() {
+  const conditions = getConditions();
+  const list = $("#store-list");
+  const count = $("#result-count");
+
+  if (!list || !count) return;
+
+  const filteredStores = stores
+    .filter((store) => {
+      const searchableText = [
+        store.chain,
+        store.storeName,
+        store.prefecture,
+        store.city,
+        store.address,
+        ...(store.stations || [])
+      ].join(" ").toLowerCase();
+
+      return (
+        (!conditions.search ||
+          searchableText.includes(conditions.search)) &&
+        (!conditions.prefecture ||
+          store.prefecture === conditions.prefecture) &&
+        (!conditions.city ||
+          store.city === conditions.city)
+      );
+    })
+    .map((store) => ({
+      ...store,
+      estimate: calculatePrice(store, conditions)
+    }))
+    .sort((a, b) => {
+      if (a.estimate === null && b.estimate === null) return 0;
+      if (a.estimate === null) return 1;
+      if (b.estimate === null) return -1;
+      return a.estimate.total - b.estimate.total;
+    });
+
+  count.textContent = `${filteredStores.length}店舗`;
+
+  if (filteredStores.length === 0) {
+    list.innerHTML = "<p>該当する店舗がありません。</p>";
+    return;
+  }
+
+  list.innerHTML = filteredStores.map((store) => {
+    const priceHtml = store.estimate
+      ? `
+        <div class="store-price">
+          <strong>約${store.estimate.total.toLocaleString("ja-JP")}円</strong>
+          <small>
+            ${conditions.people}名・${formatDuration(conditions.durationMinutes)}
+            の合計目安
+          </small>
+        </div>
+      `
+      : `
+        <div class="store-price">
+          <strong>料金データなし</strong>
+          <small>選択した条件の料金は未登録です。</small>
+        </div>
+      `;
+
+    const officialLink = store.officialUrl
+      ? `<a href="${escapeHtml(store.officialUrl)}"
+            target="_blank" rel="noopener noreferrer">
+            公式サイト
+         </a>`
+      : "";
+
+    return `
+      <article class="store-card">
+        <div>
+          <h3>${escapeHtml(store.storeName || "店舗名未登録")}</h3>
+          <p>${escapeHtml(store.chain || "")}</p>
+          <p>
+            ${escapeHtml(store.prefecture || "")}
+            ${escapeHtml(store.city || "")}
+            ${escapeHtml(store.address || "")}
+          </p>
+          ${officialLink}
+        </div>
+        ${priceHtml}
+      </article>
+    `;
+  }).join("");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
@@ -18,303 +229,108 @@ function escapeHTML(value) {
   })[char]);
 }
 
-function normalize(value) {
-  return String(value ?? "").normalize("NFKC").toLowerCase().trim();
-}
-
-function getStations(store) {
-  if (!Array.isArray(store.stations)) return [];
-
-  return store.stations.map(station =>
-    typeof station === "string" ? station : station.name ?? ""
-  ).filter(Boolean);
-}
-
-function getPricing(store) {
-  return Array.isArray(store.pricing) ? store.pricing : [];
-}
-
-function getConditions() {
-  return {
-    people: Number($("#people")?.value || 1),
-    hours: Number($("#hours")?.value || 1),
-    dayType: $("#day-type")?.value || "weekday",
-    timeType: $("#time-type")?.value || "daytime",
-    plan: $("#plan")?.value || "normal"
-  };
-}
-
-/*
- * 料金データの形式
- *
- * {
- *   "dayType": "weekday",
- *   "timeType": "daytime",
- *   "plan": "normal",
- *   "unit": "30min",
- *   "price": 150,
- *   "minimumPeople": 1,
- *   "mandatoryFee": 0
- * }
- *
- * unit:
- *   "30min" = 30分ごとの1人あたり料金
- *   "hour"  = 1時間ごとの1人あたり料金
- *   "flat"  = 1人あたりの固定料金
- *
- * ※店舗の実際の料金表を確認してから登録すること。
- */
-
-function calculatePrice(store, conditions) {
-  const pricing = getPricing(store);
-
-  const candidates = pricing.filter(item =>
-    item.dayType === conditions.dayType &&
-    item.timeType === conditions.timeType &&
-    item.plan === conditions.plan &&
-    Number.isFinite(Number(item.price)) &&
-    Number(item.price) >= 0 &&
-    Number(item.minimumPeople ?? 1) <= conditions.people
-  );
-
-  if (!candidates.length) return null;
-
-  const estimates = candidates.map(item => {
-    const price = Number(item.price);
-    const fee = Number(item.mandatoryFee ?? 0);
-    const minimumCharge = Number(item.minimumCharge ?? 0);
-
-    let total;
-
-    switch (item.unit) {
-      case "30min":
-        total = price * conditions.hours * 2 * conditions.people;
-        break;
-
-      case "hour":
-        total = price * conditions.hours * conditions.people;
-        break;
-
-      case "flat":
-        total = price * conditions.people;
-        break;
-
-      default:
-        return null;
-    }
-
-    total = Math.max(total, minimumCharge);
-    total += fee * conditions.people;
-
-    return {
-      total: Math.ceil(total),
-      pricing: item
-    };
-  }).filter(Boolean);
-
-  if (!estimates.length) return null;
-
-  estimates.sort((a, b) => a.total - b.total);
-
-  return estimates[0];
-}
-
-function storeMatches(store) {
-  const query = normalize($("#search")?.value || "");
-  const prefecture = $("#prefecture")?.value || "";
-  const city = $("#city")?.value || "";
-
-  const text = [
-    store.chain,
-    store.storeName,
-    store.prefecture,
-    store.city,
-    store.address,
-    ...getStations(store)
-  ].join(" ");
-
-  return (
-    (!query || normalize(text).includes(query)) &&
-    (!prefecture || store.prefecture === prefecture) &&
-    (!city || store.city === city)
-  );
-}
-
-function renderStore(store, conditions) {
-  const result = calculatePrice(store, conditions);
-
-  const priceHTML = result
-    ? `
-      <div class="store-price">
-        <span>条件に基づく料金目安</span>
-        <strong>${result.total.toLocaleString("ja-JP")}円</strong>
-        <small>${conditions.people}名・${conditions.hours}時間</small>
-      </div>
-    `
-    : `
-      <div class="store-price">
-        <span>料金未確認</span>
-        <p>指定条件に対応する料金データがありません。</p>
-      </div>
-    `;
-
-  return {
-    price: result?.total ?? Infinity,
-    html: `
-      <article class="store-card">
-        <div class="store-card-header">
-          <span class="store-chain">${escapeHTML(store.chain || "チェーン未登録")}</span>
-          <span class="store-status">${result ? "料金比較可能" : "料金未確認"}</span>
-        </div>
-
-        <h3>${escapeHTML(store.storeName || "店舗名未登録")}</h3>
-
-        <p class="store-location">
-          ${escapeHTML(store.prefecture || "")}
-          ${escapeHTML(store.city || "")}
-          ${escapeHTML(store.address || "")}
-        </p>
-
-        ${
-          getStations(store).length
-            ? `<p class="store-stations">最寄り駅：${getStations(store).map(escapeHTML).join("・")}</p>`
-            : ""
-        }
-
-        ${priceHTML}
-
-        ${
-          store.officialUrl
-            ? `<a href="${escapeHTML(store.officialUrl)}" target="_blank" rel="noopener noreferrer">公式サイトを見る ↗</a>`
-            : ""
-        }
-
-        ${
-          store.verifiedAt
-            ? `<p class="store-verified">料金確認日：${escapeHTML(store.verifiedAt)}</p>`
-            : ""
-        }
-      </article>
-    `
-  };
-}
-
-function populateSelect(selector, values, firstLabel) {
-  const select = $(selector);
+function populatePrefectures() {
+  const select = $("#prefecture");
   if (!select) return;
 
-  const previous = select.value;
+  const currentValue = select.value;
 
-  select.innerHTML =
-    `<option value="">${escapeHTML(firstLabel)}</option>` +
-    values.map(value =>
-      `<option value="${escapeHTML(value)}">${escapeHTML(value)}</option>`
-    ).join("");
-
-  if (values.includes(previous)) select.value = previous;
-}
-
-function populateLocations() {
   const prefectures = [
-    ...new Set(app.stores.map(store => store.prefecture).filter(Boolean))
+    ...new Set(
+      stores.map((store) => store.prefecture).filter(Boolean)
+    )
   ].sort((a, b) => a.localeCompare(b, "ja"));
 
-  populateSelect("#prefecture", prefectures, "すべての都道府県");
-  populateCities();
+  select.innerHTML =
+    '<option value="">すべての都道府県</option>' +
+    prefectures.map((prefecture) =>
+      `<option value="${escapeHtml(prefecture)}">${escapeHtml(prefecture)}</option>`
+    ).join("");
+
+  if (prefectures.includes(currentValue)) {
+    select.value = currentValue;
+  }
 }
 
 function populateCities() {
-  const prefecture = $("#prefecture")?.value || "";
+  const select = $("#city");
+  if (!select) return;
+
+  const selectedPrefecture = $("#prefecture")?.value || "";
+  const currentValue = select.value;
 
   const cities = [
     ...new Set(
-      app.stores
-        .filter(store => !prefecture || store.prefecture === prefecture)
-        .map(store => store.city)
+      stores
+        .filter((store) =>
+          !selectedPrefecture ||
+          store.prefecture === selectedPrefecture
+        )
+        .map((store) => store.city)
         .filter(Boolean)
     )
   ].sort((a, b) => a.localeCompare(b, "ja"));
 
-  populateSelect("#city", cities, "すべての市区町村");
-}
+  select.innerHTML =
+    '<option value="">すべての市区町村</option>' +
+    cities.map((city) =>
+      `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`
+    ).join("");
 
-function renderStores() {
-  const container = $("#store-list");
-  if (!container) return;
-
-  const conditions = getConditions();
-
-  const results = app.stores
-    .filter(storeMatches)
-    .map(store => renderStore(store, conditions))
-    .sort((a, b) => a.price - b.price);
-
-  const count = $("#result-count");
-  if (count) count.textContent = `${results.length}店舗`;
-
-  if (!results.length) {
-    container.innerHTML = `
-      <p class="empty-message">条件に一致する店舗はありません。</p>
-    `;
-    return;
+  if (cities.includes(currentValue)) {
+    select.value = currentValue;
   }
-
-  container.innerHTML = results.map(result => result.html).join("");
 }
 
-async function loadStores() {
-  const container = $("#store-list");
+async function initialize() {
+  const list = $("#store-list");
 
   try {
-    const response = await fetch(DATA_URL, { cache: "no-store" });
+    const response = await fetch(DATA_URL);
 
     if (!response.ok) {
-      throw new Error(`店舗データの読み込みに失敗しました: ${response.status}`);
+      throw new Error("店舗データを読み込めませんでした。");
     }
 
     const data = await response.json();
+    stores = Array.isArray(data.stores) ? data.stores : [];
 
-    if (!data || !Array.isArray(data.stores)) {
-      throw new Error("stores.jsonの形式が正しくありません。");
-    }
-
-    app.stores = data.stores;
-    populateLocations();
-    renderStores();
+    populatePrefectures();
+    populateCities();
+    updateDuration();
   } catch (error) {
     console.error(error);
 
-    if (container) {
-      container.innerHTML = `
-        <p class="error-message">
-          店舗情報を読み込めませんでした。時間をおいて再読み込みしてください。
-        </p>
-      `;
+    if (list) {
+      list.innerHTML =
+        "<p>店舗データを読み込めませんでした。時間をおいて再読み込みしてください。</p>";
     }
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  [
-    "#search",
-    "#prefecture",
-    "#city",
-    "#people",
-    "#hours",
-    "#day-type",
-    "#time-type",
-    "#plan"
-  ].forEach(selector => {
-    $(selector)?.addEventListener("input", () => {
-      if (selector === "#prefecture") populateCities();
-      renderStores();
-    });
+durationInput.addEventListener("input", updateDuration);
 
-    $(selector)?.addEventListener("change", () => {
-      if (selector === "#prefecture") populateCities();
-      renderStores();
-    });
-  });
-
-  loadStores();
+minusButton.addEventListener("click", () => {
+  changeDuration(-5);
 });
+
+plusButton.addEventListener("click", () => {
+  changeDuration(5);
+});
+
+$("#search").addEventListener("input", renderStores);
+
+$("#prefecture").addEventListener("change", () => {
+  populateCities();
+  renderStores();
+});
+
+$("#city").addEventListener("change", renderStores);
+
+["#people", "#day-type", "#time-type", "#plan"].forEach(
+  (selector) => {
+    $(selector)?.addEventListener("change", renderStores);
+  }
+);
+
+initialize();
