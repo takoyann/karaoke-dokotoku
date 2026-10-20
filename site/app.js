@@ -1,15 +1,286 @@
-(() => {'use strict';
-const chains=[
-{name:'まねきねこ',rate:390,weekend:1.28,drink:480,member:.88,student:.78,potato:520,alcohol:1500,plan:'時間制・サンプル'},
-{name:'ビッグエコー',rate:460,weekend:1.30,drink:550,member:.92,student:.82,potato:580,alcohol:1700,plan:'時間制・サンプル'},
-{name:'BanBan',rate:350,weekend:1.25,drink:450,member:.90,student:.80,potato:500,alcohol:1450,plan:'時間制・サンプル'},
-{name:'ジャンカラ',rate:370,weekend:1.22,drink:0,member:.88,student:.78,potato:550,alcohol:1600,plan:'飲み放題込み想定・サンプル'},
-{name:'カラオケ館',rate:430,weekend:1.30,drink:520,member:.90,student:.82,potato:570,alcohol:1650,plan:'時間制・サンプル'},
-{name:'コート・ダジュール',rate:440,weekend:1.28,drink:500,member:.92,student:.84,potato:600,alcohol:1750,plan:'時間制・サンプル'},
-{name:'快活CLUB',rate:420,weekend:1.18,drink:0,member:1,student:1,potato:450,alcohol:0,plan:'カラオケ席・サンプル'}];
-const $=id=>document.getElementById(id),yen=n=>Math.round(n).toLocaleString('ja-JP')+'円';let latest=[];
-function calculate(){const duration=Number($('duration').value),people=Math.max(1,Math.min(20,Number($('people').value)||1)),day=$('day').value,discount=$('discount').value; $('people').value=people;
-latest=chains.map(c=>{const mult=discount==='student'?c.student:discount==='member'?c.member:1;const room=c.rate*duration*(day==='weekend'?c.weekend:1)*mult,drink=$('drink').checked?c.drink:0,alcohol=$('alcohol').checked?c.alcohol:0,food=$('potato').checked?c.potato:0,total=(room+drink+alcohol)*people+food;return {...c,total,perPerson:total/people,hourly:total/people/duration,people,duration,food,selectedDrink:drink,selectedAlcohol:alcohol};});sortRender();$('summary').textContent=`${people}人・${duration}時間・${day==='weekend'?'週末':'平日'}想定の仮料金（交通費・経路は未計算）`;}
-function sortRender(){const mode=$('sort').value,sorted=[...latest].sort((a,b)=>mode==='hourly'?a.hourly-b.hourly:mode==='name'?a.name.localeCompare(b.name,'ja'):a.total-b.total),target=$('results-list');target.replaceChildren();sorted.forEach((x,i)=>{const card=document.createElement('article');card.className='card'+(mode!=='name'&&i===0?' best':'');const left=document.createElement('div'),brand=document.createElement('div');brand.className='brand';brand.textContent=x.name;if(mode!=='name'&&i===0){const badge=document.createElement('span');badge.className='badge';badge.textContent='この条件で最安';brand.append(badge)}const plan=document.createElement('div');plan.className='plan';plan.textContent=x.plan;left.append(brand,plan);const price=document.createElement('div');price.className='price';const strong=document.createElement('strong');strong.textContent=yen(x.total);const small=document.createElement('small');small.textContent=`合計・${x.people}人`;price.append(strong,small);const details=document.createElement('div');details.className='details';[`1人あたり ${yen(x.perPerson)}`,`1人1時間あたり ${yen(x.hourly)}`,`ポテト ${x.food?yen(x.food)+'（1皿）':'なし'}`,`ドリンク ${$('drink').checked?(x.drink?yen(x.drink)+'/人':'料金込み想定'):'なし'}`,`アルコール ${$('alcohol').checked?(x.alcohol?yen(x.alcohol)+'/人':'対応料金データなし'):'なし'}`].forEach(t=>{const s=document.createElement('span');s.textContent=t;details.append(s)});card.append(left,price,details);target.append(card)})}
-$('search-form').addEventListener('submit',e=>{e.preventDefault();calculate()});$('sort').addEventListener('change',sortRender);$('reset').addEventListener('click',()=>{$('origin').value='';$('transport').value='transit';$('duration').value='2';$('people').value='2';$('day').value='weekday';$('discount').value='none';$('potato').checked=false;$('drink').checked=true;$('alcohol').checked=false;$('sort').value='total';calculate()});calculate();
-})();
+"use strict";
+
+const DATA_URL = "./data/stores.json";
+
+const app = {
+  stores: [],
+  error: null
+};
+
+function getElement(...selectors) {
+  for (const selector of selectors) {
+    const element = document.querySelector(selector);
+    if (element) return element;
+  }
+  return null;
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function normalize(value) {
+  return String(value ?? "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .trim();
+}
+
+function getStations(store) {
+  return Array.isArray(store.stations)
+    ? store.stations.map(station =>
+        typeof station === "string"
+          ? station
+          : station.name ?? ""
+      ).filter(Boolean)
+    : [];
+}
+
+function matchesSearch(store, query) {
+  if (!query) return true;
+
+  const searchable = [
+    store.chain,
+    store.storeName,
+    store.prefecture,
+    store.city,
+    store.address,
+    ...getStations(store)
+  ].join(" ");
+
+  return normalize(searchable).includes(normalize(query));
+}
+
+function getPricingStatus(store) {
+  if (!Array.isArray(store.pricing) || store.pricing.length === 0) {
+    return "料金未登録";
+  }
+
+  return "料金データあり";
+}
+
+function renderStore(store) {
+  const stations = getStations(store);
+
+  return `
+    <article class="store-card">
+      <div class="store-card-header">
+        <span class="store-chain">${escapeHTML(store.chain || "チェーン未登録")}</span>
+        <span class="store-status">${escapeHTML(getPricingStatus(store))}</span>
+      </div>
+
+      <h3>${escapeHTML(store.storeName || "店舗名未登録")}</h3>
+
+      <p class="store-location">
+        ${escapeHTML(store.prefecture || "")}
+        ${escapeHTML(store.city || "")}
+        ${escapeHTML(store.address || "")}
+      </p>
+
+      ${
+        stations.length
+          ? `<p class="store-stations">最寄り駅：${stations.map(escapeHTML).join("・")}</p>`
+          : ""
+      }
+
+      <div class="store-price">
+        ${
+          Array.isArray(store.pricing) && store.pricing.length
+            ? "料金データを確認できます"
+            : "料金情報はまだ登録されていません"
+        }
+      </div>
+
+      ${
+        store.officialUrl
+          ? `<a href="${escapeHTML(store.officialUrl)}" target="_blank" rel="noopener noreferrer">公式サイトを見る ↗</a>`
+          : ""
+      }
+
+      ${
+        store.verifiedAt
+          ? `<p class="store-verified">料金確認日：${escapeHTML(store.verifiedAt)}</p>`
+          : ""
+      }
+    </article>
+  `;
+}
+
+function renderStores() {
+  const container = getElement(
+    "#store-list",
+    "#stores",
+    ".store-list",
+    "[data-store-list]"
+  );
+
+  if (!container) {
+    console.error(
+      "店舗表示欄が見つかりません。index.htmlの構造を確認してください。"
+    );
+    return;
+  }
+
+  const query = getElement(
+    "#search",
+    "#search-input",
+    "#store-search",
+    "[data-store-search]"
+  )?.value ?? "";
+
+  const prefecture = getElement("#prefecture")?.value ?? "";
+  const city = getElement("#city")?.value ?? "";
+
+  const results = app.stores.filter(store => {
+    const matchesPrefecture =
+      !prefecture || store.prefecture === prefecture;
+
+    const matchesCity =
+      !city || store.city === city;
+
+    return (
+      matchesPrefecture &&
+      matchesCity &&
+      matchesSearch(store, query)
+    );
+  });
+
+  container.innerHTML = results.length
+    ? results.map(renderStore).join("")
+    : `<p class="empty-message">条件に一致する店舗はありません。</p>`;
+
+  const count = getElement(
+    "#result-count",
+    "#store-count",
+    "[data-result-count]"
+  );
+
+  if (count) {
+    count.textContent = `${results.length}店舗`;
+  }
+}
+
+function populatePrefectures() {
+  const select = getElement("#prefecture");
+  if (!select) return;
+
+  const currentValue = select.value;
+
+  const prefectures = [
+    ...new Set(
+      app.stores
+        .map(store => store.prefecture)
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b, "ja"));
+
+  select.innerHTML =
+    `<option value="">すべての都道府県</option>` +
+    prefectures.map(prefecture =>
+      `<option value="${escapeHTML(prefecture)}">${escapeHTML(prefecture)}</option>`
+    ).join("");
+
+  if (prefectures.includes(currentValue)) {
+    select.value = currentValue;
+  }
+}
+
+function populateCities() {
+  const select = getElement("#city");
+  if (!select) return;
+
+  const prefecture = getElement("#prefecture")?.value ?? "";
+
+  const cities = [
+    ...new Set(
+      app.stores
+        .filter(store =>
+          !prefecture || store.prefecture === prefecture
+        )
+        .map(store => store.city)
+        .filter(Boolean)
+    )
+  ].sort((a, b) => a.localeCompare(b, "ja"));
+
+  const currentValue = select.value;
+
+  select.innerHTML =
+    `<option value="">すべての市区町村</option>` +
+    cities.map(city =>
+      `<option value="${escapeHTML(city)}">${escapeHTML(city)}</option>`
+    ).join("");
+
+  if (cities.includes(currentValue)) {
+    select.value = currentValue;
+  }
+}
+
+async function loadStores() {
+  const container = getElement(
+    "#store-list",
+    "#stores",
+    ".store-list",
+    "[data-store-list]"
+  );
+
+  try {
+    const response = await fetch(DATA_URL, { cache: "no-store" });
+
+    if (!response.ok) {
+      throw new Error(`店舗データの読み込みに失敗しました (${response.status})`);
+    }
+
+    const data = await response.json();
+
+    if (!data || !Array.isArray(data.stores)) {
+      throw new Error("stores.jsonの形式が正しくありません");
+    }
+
+    app.stores = data.stores;
+
+    populatePrefectures();
+    populateCities();
+    renderStores();
+
+    console.log(`${app.stores.length}店舗を読み込みました`);
+  } catch (error) {
+    console.error(error);
+
+    if (container) {
+      container.innerHTML = `
+        <p class="error-message">
+          店舗データを読み込めませんでした。時間をおいて再読み込みしてください。
+        </p>
+      `;
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const search = getElement(
+    "#search",
+    "#search-input",
+    "#store-search",
+    "[data-store-search]"
+  );
+
+  const prefecture = getElement("#prefecture");
+  const city = getElement("#city");
+
+  search?.addEventListener("input", renderStores);
+
+  prefecture?.addEventListener("change", () => {
+    populateCities();
+    renderStores();
+  });
+
+  city?.addEventListener("change", renderStores);
+
+  loadStores();
+});
