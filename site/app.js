@@ -184,13 +184,13 @@ function renderStores() {
           </small>
         </div>
       `
-      : `
+            : `
         <div class="store-price">
-          <strong>料金データなし</strong>
-          <small>選択した条件の料金は未登録です。</small>
+          <strong>料金未登録</strong>
+          <small>この条件の料金はまだ比較できません。</small>
+          <small>公式サイトで最新の料金をご確認ください。</small>
         </div>
       `;
-
     const officialLink = store.officialUrl
       ? `<a href="${escapeHtml(store.officialUrl)}"
             target="_blank" rel="noopener noreferrer">
