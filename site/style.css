@@ -366,3 +366,29 @@ select:focus {
     padding: 18px;
   }
 }
+
+/* スライダーの操作範囲を修正 */
+#duration {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: 32px;
+  margin: 8px 0;
+  padding: 0;
+  border: none;
+  outline-offset: 4px;
+  appearance: auto;
+  -webkit-appearance: auto;
+  accent-color: #4263eb;
+  cursor: pointer;
+}
+
+.duration-field {
+  min-width: 0;
+}
+
+.duration-controls button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
