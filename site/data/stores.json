@@ -104,7 +104,23 @@
           "minimumMinutes": 30,
           "minimumPeople": 1,
           "mandatoryFee": 0
-        }
+        },
+        {
+  "id": "manekineko-kawaramachi",
+  "chain": "まねきねこ",
+  "storeName": "まねきねこ 河原町店",
+  "prefecture": "京都府",
+  "city": "京都市中京区",
+  "address": "京都府京都市中京区河原町通蛸薬師上る奈良屋町291 DECK By COASTビル2F～4F",
+  "latitude": null,
+  "longitude": null,
+  "stations": [
+    "京都河原町駅"
+  ],
+  "officialUrl": "https://www.karaokemanekineko.jp/locations/kyoto/kyoto/kawaramachi-store/",
+  "verifiedAt": "2026-10-20",
+  "pricing": []
+}
       ]
     }
   ]
