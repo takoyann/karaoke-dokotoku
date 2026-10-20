@@ -85,24 +85,17 @@ function calculatePrice(store, conditions) {
     let total;
 
     if (item.unit === "30min" || item.unit === "hour") {
-      const defaultBillingMinutes =
-        item.unit === "30min" ? 30 : 60;
-
       const billingMinutes = Number(
-        item.billingMinutes || defaultBillingMinutes
+        item.billingMinutes ||
+        (item.unit === "30min" ? 30 : 60)
       );
 
       const minimumMinutes = Number(
         item.minimumMinutes || billingMinutes
       );
 
-      const billableMinutes = Math.max(
-        duration,
-        minimumMinutes
-      );
-
       const blocks = Math.ceil(
-        billableMinutes / billingMinutes
+        Math.max(duration, minimumMinutes) / billingMinutes
       );
 
       total = price * blocks * people;
@@ -118,10 +111,7 @@ function calculatePrice(store, conditions) {
       total = Math.max(total, Number(item.minimumCharge));
     }
 
-    return {
-      total,
-      unit: item.unit
-    };
+    return { total, unit: item.unit };
   }).filter(Boolean);
 
   if (estimates.length === 0) return null;
