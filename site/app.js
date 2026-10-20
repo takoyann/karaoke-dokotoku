@@ -167,13 +167,20 @@ function renderStores() {
   }
 
   list.innerHTML = filteredStores.map((store) => {
-    const priceHtml = store.estimate
+       const priceHtml = store.estimate
       ? `
         <div class="store-price">
           <strong>約${store.estimate.total.toLocaleString("ja-JP")}円</strong>
           <small>
-            ${conditions.people}名・${formatDuration(conditions.durationMinutes)}
-            の合計目安
+            ${conditions.people}名での合計目安
+          </small>
+          <small>
+            1人あたり約${Math.ceil(
+              store.estimate.total / conditions.people
+            ).toLocaleString("ja-JP")}円
+          </small>
+          <small>
+            利用時間：${formatDuration(conditions.durationMinutes)}
           </small>
         </div>
       `
