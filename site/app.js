@@ -160,6 +160,9 @@ function renderStores() {
     });
 
   count.textContent = `${filteredStores.length}店舗`;
+    const cheapestStoreId = filteredStores.find(
+    (store) => store.estimate !== null
+  )?.id;
 
   if (filteredStores.length === 0) {
     list.innerHTML = "<p>該当する店舗がありません。</p>";
@@ -167,6 +170,13 @@ function renderStores() {
   }
 
   list.innerHTML = filteredStores.map((store) => {
+        const isCheapest =
+      store.estimate !== null &&
+      store.id === cheapestStoreId;
+
+    const cheapestBadge = isCheapest
+      ? '<span class="cheapest-badge">最安値</span>'
+      : "";
        const priceHtml = store.estimate
       ? `
         <div class="store-price">
@@ -201,7 +211,10 @@ function renderStores() {
     return `
       <article class="store-card">
         <div>
-          <h3>${escapeHtml(store.storeName || "店舗名未登録")}</h3>
+        　 <h3>
+            ${escapeHtml(store.storeName || "店舗名未登録")}
+            ${cheapestBadge}
+          </h3>
           <p>${escapeHtml(store.chain || "")}</p>
           <p>
             ${escapeHtml(store.prefecture || "")}
