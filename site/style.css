@@ -450,3 +450,26 @@ select:focus {
     text-align: left;
   }
 }
+/* 検索条件リセットボタン */
+#reset-filters {
+  display: inline-block;
+  padding: 10px 18px;
+  margin-top: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+#reset-filters:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+#reset-filters:active {
+  background: #e5e7eb;
+}
