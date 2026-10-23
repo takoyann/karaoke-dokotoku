@@ -392,3 +392,61 @@ select:focus {
   opacity: 0.35;
   cursor: not-allowed;
 }
+/* 最安値バッジ */
+.cheapest-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #e53935;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+/* 店舗カード */
+.store-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.store-card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.store-price {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.store-price strong {
+  display: block;
+  font-size: 22px;
+}
+
+.store-price small {
+  display: block;
+  margin-top: 4px;
+  color: #666;
+}
+
+@media (max-width: 600px) {
+  .store-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .store-price {
+    text-align: left;
+  }
+}
