@@ -344,3 +344,24 @@ $("#city").addEventListener("change", renderStores);
 );
 
 initialize();
+// 検索条件を初期状態に戻す
+$("#reset-filters").addEventListener("click", () => {
+  $("#search").value = "";
+  $("#prefecture").value = "";
+
+  populateCities();
+  $("#city").value = "";
+
+  $("#people").value = "2";
+  $("#day-type").value = "weekday";
+  $("#time-type").value = "daytime";
+  $("#plan").value = "normal";
+
+  durationInput.value = "90";
+  updateDuration();
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
